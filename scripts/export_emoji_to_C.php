@@ -194,6 +194,8 @@ Custom sets can be composed by creating one array of the following C types:
 
 See [`src/Fonts/emojis/emojis_structs.h`](src/Fonts/emojis/emojis_structs.h) for more details.
 
+## Usage
+
 For convenience, the following complete sets are available:
 
 - `all_groups_8x8`
@@ -412,22 +414,6 @@ if( $raw_emojis_list )
 
   file_put_contents("$readme_file", PHP_EOL."## Size `$packSuffix`".PHP_EOL.PHP_EOL, FILE_APPEND);
 
-  // file_put_contents("$readme_file", sprintf("| %-29s | %-39s |".PHP_EOL,"Group Name", "Subgroup Name"), FILE_APPEND);
-  // file_put_contents("$readme_file", "| ----------------------------- | --------------------------------------- |".PHP_EOL, FILE_APPEND);
-  // file_put_contents("$readme_file",
-  //   sprintf("| %-29s | %-39s |".PHP_EOL,
-  //       '**Type**: '.backtick_string("emoji_png_group_t"),
-  //       '**Type**: '.backtick_string("emoji_png_set_t")),
-  //   FILE_APPEND
-  // );
-  // file_put_contents("$readme_file", sprintf("| %-29s | %-39s |".PHP_EOL.PHP_EOL,"<img width=300/>", "<img width=300/>"), FILE_APPEND);
-
-  // | First Header  | Second Header |
-  // | ------------- | ------------- |
-  // | Content Cell  | Content Cell  |
-  // | Content Cell  | Content Cell  |
-
-
   foreach($emoji_groups as $groupname => $subgroup)
   {
     $groupset_name = sprintf("group_set_%s_%s", $groupname, $packSuffix);
@@ -445,10 +431,12 @@ if( $raw_emojis_list )
       $emojiset_name = sprintf('emojis_set_%s_%s', $subgroupname, $packSuffix);
       $subgroup_name = sprintf('subgroup_%s_%s', $subgroupname, $packSuffix);
       $emojis_code = "";
+      $emojis_in_group = "";
       file_put_contents("$c_pack_file", PHP_EOL.'static const emoji_png_t '.$emojiset_name.'[] = {'.PHP_EOL, FILE_APPEND);
       foreach($emojis as $emoji)
       {
         $emojis_code .= '    '.$emoji['c'].PHP_EOL;
+        $emojis_in_group .= $emoji['char'];
       }
       file_put_contents("$c_pack_file", $emojis_code, FILE_APPEND);
       file_put_contents("$c_pack_file", '};'.PHP_EOL, FILE_APPEND);
@@ -457,7 +445,7 @@ if( $raw_emojis_list )
       );
       file_put_contents("$c_pack_file", $emojis_set, FILE_APPEND);
       //file_put_contents("$readme_file", sprintf("| %-29s | %-39s |".PHP_EOL,"", backtick_string($subgroup_name) ), FILE_APPEND);
-      file_put_contents("$readme_file", sprintf("- %s".PHP_EOL, backtick_string($subgroup_name) ), FILE_APPEND);
+      file_put_contents("$readme_file", sprintf("- %s : %s".PHP_EOL, backtick_string($subgroup_name), $emojis_in_group ), FILE_APPEND);
       $subgroups .= "    $subgroup_name,".PHP_EOL;
     }
     $subgroups .= "};".PHP_EOL;

@@ -15,12 +15,6 @@ Externally managed fonts for [LovyanGFX](https://github.com/lovyan03/LovyanGFX) 
 #include <LGFX_Fonts.hpp>
 ```
 
-```cpp
-   lcd.setFont(&fonts::lvFontMontserrat8);
-   lcd.println("ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghjklmnopqrstuvwxyz0123456789");
-```
-
-
 ## Available Features
 
 ### Emojis
@@ -30,32 +24,12 @@ See [ReadMe.emojis.md](ReadMe.emojis.md)
 
 ### LVGL Fonts
 
-- lvFontMontserrat10
-- lvFontMontserrat12
-- lvFontMontserrat14
-- lvFontMontserrat16
-- lvFontMontserrat18
-- lvFontMontserrat20
-- lvFontMontserrat22
-- lvFontMontserrat24
-- lvFontMontserrat26
-- lvFontMontserrat28
-- lvFontMontserrat30
-- lvFontMontserrat32
-- lvFontMontserrat34
-- lvFontMontserrat36
-- lvFontMontserrat38
-- lvFontMontserrat40
-- lvFontMontserrat42
-- lvFontMontserrat44
-- lvFontMontserrat46
-- lvFontMontserrat48
-- lvFontMontserrat8
-- lvFontSimsun14Cjk
-- lvFontSimsun16Cjk
-- lvFontUnscii16
-- lvFontUnscii8
+See [ReadMe.LVGLfonts.md](ReadMe.LVGLfonts.md)
 
 
 
-
+## Credits/Thanks
+- [Lovyan03](https://github.com/Lovyan03) maintainer/author of [LovyanGFX](https://github.com/lovyan03/LovyanGFX) and [M5GFX](https://github.com/M5Stack/M5GFX)
+- [d4rkmen](https://github.com/d4rkmen) provided the tool [extract_emoji.py](scripts/extract_emoji.py)
+- [lvgl](https://github.com/lvgl) lv_font format and montserrat fonts
+- [googlefonts/noto-emoji](https://github.com/googlefonts/noto-emoji/blob/main/fonts/NotoColorEmoji.ttf) emojis font
