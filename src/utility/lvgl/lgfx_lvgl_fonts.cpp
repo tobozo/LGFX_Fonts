@@ -1,20 +1,20 @@
 /*\
  *
-  Lovyan GFX - Graphics library for embedded devices.
+  LGFX_Fonts - External fonts support for LovyanGFX/M5GFX
 
   Original Source:
-  https://github.com/lovyan03/LovyanGFX/
+  https://github.com/tobozo/LGFX_Fonts
 
   Licence:
-  [FreeBSD](https://github.com/lovyan03/LovyanGFX/blob/master/license.txt)
+  [Multiple](https://github.com/tobozo/LGFX_Fonts/blob/master/LICENSE.txt)
 
   Author:
-  [lovyan03](https://twitter.com/lovyan03)
+  [tobozo](https://github.com/tobozo)
 
   Contributors:
   [ciniml](https://github.com/ciniml)
   [mongonta0716](https://github.com/mongonta0716)
-  [tobozo](https://github.com/tobozo)
+  [lovyan03](https://twitter.com/lovyan03)
 
 \*/
 

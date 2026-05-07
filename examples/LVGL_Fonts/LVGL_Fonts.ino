@@ -8,14 +8,15 @@
 
 #if defined USE_LGFX
 
+  #define LGFX_AUTODETECT
   #include <LovyanGFX.hpp>
-  #include <lgfx_user/LGFX_3.5_RPI_LCD_A.hpp>
-
+  // If autodetect fails, check `LovyanGFX/src/lgfx_user` folder to see if your device is listed and add it as follows:
+  // #include <lgfx_user/LGFX_3.5_RPI_LCD_A.hpp>
+  // If it isn't listed, see https://github.com/lovyan03/LovyanGFX/blob/master/examples/HowToUse/2_user_setting/2_user_setting.ino
   static LGFX lcd;
   #define initExample lcd.init
 
-
-#elif defined USE_M5GFX // Note: M5GFX version < 1.2.20
+#elif defined USE_M5GFX // Note: if used with LVGL, M5GFX version must NOT be 1.2.20 (prev or next should do)
 
   #include <M5GFX.h>
   #include <M5Unified.h>

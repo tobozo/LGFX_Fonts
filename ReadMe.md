@@ -21,10 +21,14 @@ Externally managed fonts for [LovyanGFX](https://github.com/lovyan03/LovyanGFX) 
 ```
 
 
-## Available Fonts
+## Available Features
 
+### Emojis
 
-### LVGL
+See [ReadMe.emojis.md](ReadMe.emojis.md)
+  
+
+### LVGL Fonts
 
 - lvFontMontserrat10
 - lvFontMontserrat12
