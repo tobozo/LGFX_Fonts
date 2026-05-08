@@ -30,6 +30,9 @@
 
 #include "../../Fonts/emojis/emojis.h"
 
+#include <vector>
+#include <map>
+
 
 namespace lgfx
 {
@@ -38,7 +41,25 @@ namespace lgfx
   namespace emojis
   {
 
-    // emoji data description for gfx rendering
+// ========================================================================================
+
+    // A vector will be filled with these, sorted by code
+    struct emoji_code_ptr_t
+    {
+      uint32_t code;
+      const emoji_png_t* ptr;
+    };
+
+    // Code ranges used for faster lookups
+    struct emoji_block_range_t
+    {
+      uint32_t start;
+      uint32_t end;
+      uint32_t idx_start;
+      uint32_t idx_end;
+    };
+
+    // Emoji data description for gfx rendering
     struct emoji_desc_t
     {
       uint32_t code = 0;
@@ -58,13 +79,10 @@ namespace lgfx
         template<std::size_t count>
         static bool loadEmojis(LGFXBase* gfx, const emoji_png_t (&emojis)[count]) // emoji set
         {
-          if( LGFX_Emojis::_loaded || !gfx || !emojis || count==0)
+          if( _loaded || !gfx || !emojis || count==0)
             return false;
-          LGFX_Emojis::_gfx = gfx;
-          LGFX_Emojis::emojisPtr   = (emoji_png_t*)emojis;
-          LGFX_Emojis::emojisCount = count;
-          // Serial.printf("%d emojis\n", LGFX_Emojis::emojisCount);
-          gfx->setEmojiCallback( LGFX_Emojis::_draw_cb );
+          _gfx = gfx;
+          _gfx->setEmojiCallback( _draw_cb );
           return true;
         }
 
@@ -72,13 +90,13 @@ namespace lgfx
         template<std::size_t count>
         static bool loadEmojis(LGFXBase* gfx, const emoji_png_set_t (&emojis_sets)[count]) // emoji sets
         {
-          if( LGFX_Emojis::_loaded || !gfx || count==0)
+          if( _loaded || !gfx || count==0)
             return false;
-          LGFX_Emojis::_gfx = gfx;
+          _gfx = gfx;
           const emoji_png_group_t groups[] = {{ emojis_sets, count }};
-          if( LGFX_Emojis::_create_list_from_groups(groups) )
+          if( _create_list_from_groups(groups) )
           {
-            gfx->setEmojiCallback( LGFX_Emojis::_draw_cb );
+            _gfx->setEmojiCallback( _draw_cb );
             return true;
           }
           return false;
@@ -87,26 +105,42 @@ namespace lgfx
         template<std::size_t count>
         static bool loadEmojis(LGFXBase* gfx, const emoji_png_group_t (&emojis_groups)[count]) // groups sets
         {
-          if( LGFX_Emojis::_loaded || !gfx || count==0)
+          if( _loaded || !gfx || count==0)
             return false;
-          LGFX_Emojis::_gfx = gfx;
-          if( LGFX_Emojis::_create_list_from_groups(emojis_groups) )
+          _gfx = gfx;
+          if( _create_list_from_groups(emojis_groups) )
           {
-            gfx->setEmojiCallback( LGFX_Emojis::_draw_cb );
+            _gfx->setEmojiCallback( _draw_cb );
             return true;
           }
           return false;
         }
 
-        static const emoji_png_t* emojis()
+        // get all loaded emojis
+        static const std::vector<emoji_code_ptr_t>& emojis()
         {
-          return LGFX_Emojis::emojisPtr;
-        }
-        static size_t count()
-        {
-          return LGFX_Emojis::emojisCount;
+          return emojisVec;
         }
 
+        // how many emojis are loaded
+        static size_t count()
+        {
+          return emojisVec.size();
+        }
+
+
+      #if __cplusplus >= 202002L // C++20
+        // C++20 warns: "operator[]() may be a static member function only with c++23", seems to work anyway
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wc++23-extensions"
+
+        static const emoji_desc_t* operator [](uint32_t code) // lookup by code
+        {
+          return _lookup(code);
+        }
+
+        #pragma GCC diagnostic pop
+      #endif
 
       private:
 
@@ -118,27 +152,23 @@ namespace lgfx
         template<std::size_t groups_count>
         static bool _create_list_from_groups(const emoji_png_group_t (&emojis_groups)[groups_count])
         {
-          return LGFX_Emojis::_create_list_from_groups(emojis_groups, groups_count);
+          return _create_list_from_groups(emojis_groups, groups_count);
         }
 
-        static const emoji_png_t* emojisPtr;
-        static size_t emojisCount;
+        static std::vector<emoji_code_ptr_t> emojisVec;
+        static std::vector<emoji_block_range_t> rangedCodes;
+
         static LGFXBase* _gfx;
 
-        static bool _alloc;
         static bool _loaded;
-
-
     };
 
-
+// ========================================================================================
 
 
   } // namespace emojis
 
   using namespace emojis;
-
-  //inline static LGFX_Emojis emojisLoader;
 
  } // namespave v1
 } // namespace lgfx
