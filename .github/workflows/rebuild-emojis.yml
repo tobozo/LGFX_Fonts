@@ -56,8 +56,9 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           maybe_changes=`git diff`
-          [[ "${maybe_changes}" == "" ]] && echo "::set-env name=has_changes::false" && echo "[INFO]: No changes in emoji font data"
-          [[ "${maybe_changes}" != "" ]] && echo "::set-env name=has_changes::true"  && echo "[WARNING]: Found changes in emoji font data!"
+
+          [[ "${maybe_changes}" == "" ]] && echo "has_changes=false" >> $GITHUB_ENV && echo "[INFO]: No changes in emoji font data"
+          [[ "${maybe_changes}" != "" ]] && echo "has_changes=true" >> $GITHUB_ENV  && echo "[WARNING]: Found changes in emoji font data!"
           exit 0
 
       - name: Create Pull Request
