@@ -13,11 +13,11 @@ on:
 
 jobs:
   build:
-    name: ${{matrix.board}}@${{matrix.platform-version}}
+    name: Emojis rebuild
 
     runs-on: ubuntu-latest
 
-    if: github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
+    # if: github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -50,6 +50,7 @@ jobs:
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
+        if: github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
         with:
           commit-message: "raising version"
           title: "Semver-Iterator auto-raise"
