@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.sketch-dir }}.ino ${{ matrix.gfx-type }}@${{ matrix.pio_env }}
+    name: ${{ matrix.sketch-dir }}/${{ matrix.gfx-type }}@${{ matrix.pio_env }}
 
     runs-on: ubuntu-latest
 
