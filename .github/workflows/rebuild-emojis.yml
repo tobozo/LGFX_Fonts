@@ -48,17 +48,18 @@ jobs:
           wget https://github.com/googlefonts/noto-emoji/raw/refs/heads/main/fonts/NotoColorEmoji.ttf
           ./create_emojis.sh NotoColorEmoji.ttf
 
-      - name: Show diff
+      - name: Check diff
         run: |
           maybe_changes=`git diff`
-          [[ "${maybe_changes}" == "" ]] && echo "No changes in emoji font data"
+          [[ "${maybe_changes}" == "" ]] && echo "[INFO]: No changes in emoji font data"
+          [[ "${maybe_changes}" != "" ]] && echo "[WARNING]: Found changes in emoji font data!"
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        if: github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
+        uses: peter-evans/create-pull-request@v8
+        # if: github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
         with:
-          commit-message: "raising version"
-          title: "Semver-Iterator auto-raise"
+          commit-message: "Upstream font got updated."
+          title: "Auto update emojis"
           body: |
             A version change occured
 
