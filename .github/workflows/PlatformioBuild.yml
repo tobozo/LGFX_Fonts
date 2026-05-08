@@ -25,7 +25,7 @@ jobs:
       matrix:
 
         board:
-          - m5stack-core
+          - m5stack_core
 
         gfx-type:
           - lgfx
@@ -36,8 +36,8 @@ jobs:
           - LVGL_Fonts
 
         include:
-          - { board: m5stack-core, gfx-type: lgfx, ... }
-          - { board: m5stack-core, gfx-type: m5gfx, ... }
+          - { board: m5stack_core, gfx-type: lgfx, ... }
+          - { board: m5stack_core, gfx-type: m5gfx, ... }
 
       fail-fast: false
 
