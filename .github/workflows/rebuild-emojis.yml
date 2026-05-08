@@ -1,0 +1,61 @@
+name: ArduinoBuild
+
+env:
+  SKETCH_NAME: emojis.ino,LVGL_Fonts.ino
+
+on:
+  push: # see: https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
+    paths:
+    - '**emoji*'
+    - '**rebuild-emojis.yml'
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+
+jobs:
+  build:
+    name: ${{matrix.board}}@${{matrix.platform-version}}
+
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Cache pip
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Install python requirements for extract_emoji.py
+        run: |
+          python -m pip install --upgrade pip
+          pip install pillow fonttools resvg-python
+
+      - name: Rebuild emojis
+        run: |
+          cd scripts
+          wget https://github.com/googlefonts/noto-emoji/raw/refs/heads/main/fonts/NotoColorEmoji.ttf
+          ./create_emojis.sh NotoColorEmoji.ttf
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "raising version"
+          title: "Semver-Iterator auto-raise"
+          body: |
+            A version change occured
+
+

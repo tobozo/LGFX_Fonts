@@ -31,7 +31,7 @@ jobs:
           # ESP32 devices for 3D matrix
           - m5stack_core
           - m5stack_cores3
-          - m5stack_tab5
+          # - m5stack_tab5 # Note M5GFX v1.2.20 Tab5 profile broken with arduino core 3.3.8
 
         platform-version:
           # ESP32 Core versions for 3D matrix
