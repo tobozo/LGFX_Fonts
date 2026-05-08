@@ -33,7 +33,7 @@ jobs:
 
         sketch-dir:
           - emojis
-          - LGFL_Fonts
+          - LGFX_Fonts
 
         include:
           - { board: m5stack-core, gfx-type: lgfx, ... }
