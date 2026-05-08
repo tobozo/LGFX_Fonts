@@ -17,14 +17,14 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.board }}@${{ matrix.gfx-type }}
+    name: ${{ matrix.pio_env }}+${{ matrix.gfx-type }}:${{ matrix.sketch-dir }}
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
 
-        board:
+        pio_env:
           - m5stack_core
 
         gfx-type:
@@ -36,8 +36,8 @@ jobs:
           - LVGL_Fonts
 
         include:
-          - { board: m5stack_core, gfx-type: lgfx, ... }
-          - { board: m5stack_core, gfx-type: m5gfx, ... }
+          - { pio_env: m5stack_core, gfx-type: lgfx, ... }
+          - { pio_env: m5stack_core, gfx-type: m5gfx, ... }
 
       fail-fast: false
 
@@ -73,7 +73,6 @@ jobs:
 
         run: |
           cd examples/${{ matrix.sketch-dir }}
-          export pio_ver=${{ matrix.gfx-type }}
-          export pio_env="${pio_ver//./_}"
-          pio pkg install -e ${{ matrix.board }}-$pio_env --no-save --library file://$(realpath ../../../)
-          pio run -e ${{ matrix.board }}-$pio_env
+          pio_env=${{ matrix.pio_env }}-${{ matrix.gfx-type }}
+          pio pkg install -e $pio_env --no-save --library file://$(realpath ../../../)
+          pio run -e pio_env
