@@ -35,6 +35,10 @@ jobs:
           - emojis
           - LGFL_Fonts
 
+        include:
+          - { board: m5stack-core, gfx-type: lgfx, ... }
+          - { board: m5stack-core, gfx-type: m5gfx, ... }
+
       fail-fast: false
 
     steps:
