@@ -6,10 +6,8 @@ env:
 on:
   push: # see: https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
     paths:
-    - '**emoji*'
+    - '**emoji*.*'
     - '**rebuild-emojis.yml'
-    branches:
-      - 'main'
   workflow_dispatch:
 
 
