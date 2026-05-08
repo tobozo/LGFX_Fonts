@@ -50,17 +50,19 @@ jobs:
           cd scripts
           wget https://github.com/googlefonts/noto-emoji/raw/refs/heads/main/fonts/NotoColorEmoji.ttf
           ./create_emojis.sh NotoColorEmoji.ttf
+          rm NotoColorEmoji.ttf
 
       - name: Check diff
         run: |
+          cd $GITHUB_WORKSPACE
           maybe_changes=`git diff`
-          [[ "${maybe_changes}" == "" ]] && echo "[INFO]: No changes in emoji font data"
-          [[ "${maybe_changes}" != "" ]] && echo "[WARNING]: Found changes in emoji font data!"
+          [[ "${maybe_changes}" == "" ]] && echo "::set-env name=has_changes::false" && echo "[INFO]: No changes in emoji font data"
+          [[ "${maybe_changes}" != "" ]] && echo "::set-env name=has_changes::true"  && echo "[WARNING]: Found changes in emoji font data!"
           exit 0
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
-        # if: github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
+        if: env.has_changes == 'true' # || github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
         with:
           commit-message: "Upstream font got updated."
           title: "Auto update emojis"
