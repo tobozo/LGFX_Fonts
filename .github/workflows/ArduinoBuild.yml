@@ -29,8 +29,9 @@ jobs:
 
         board:
           # ESP32 devices for 3D matrix
-          - m5stack-core-esp32
-          - m5stack-core2
+          - m5stack_core
+          - m5stack_cores3
+          - m5stack_tab5
 
         platform-version:
           # ESP32 Core versions for 3D matrix
