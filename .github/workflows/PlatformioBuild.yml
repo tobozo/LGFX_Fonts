@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.pio_env }}+${{ matrix.gfx-type }}:${{ matrix.sketch-dir }}
+    name: ${{ matrix.sketch-dir }}.ino ${{ matrix.gfx-type }}@${{ matrix.pio_env }}
 
     runs-on: ubuntu-latest
 
@@ -75,4 +75,4 @@ jobs:
           cd examples/${{ matrix.sketch-dir }}
           pio_env=${{ matrix.pio_env }}-${{ matrix.gfx-type }}
           pio pkg install -e $pio_env --no-save --library file://$(realpath ../../../)
-          pio run -e pio_env
+          pio run -e $pio_env
