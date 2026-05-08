@@ -2,8 +2,8 @@
 //#include <lvgl.h>
 
 
-#define USE_LGFX
-//#define USE_M5GFX
+//#define USE_LGFX
+#define USE_M5GFX
 
 
 #if defined USE_LGFX

@@ -1,0 +1,73 @@
+name: EmojisRebuild
+
+env:
+  SKETCH_NAME: emojis.ino,LVGL_Fonts.ino
+
+on:
+  push: # see: https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
+    paths:
+    - '**emoji*.*'
+    - '**rebuild-emojis.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    name: Emojis rebuild
+
+    runs-on: ubuntu-latest
+
+    # if: github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Cache pip
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Install python requirements for extract_emoji.py
+        run: |
+          python -m pip install --upgrade pip
+          pip install pillow fonttools resvg-py
+
+      - name: Rebuild emojis
+        run: |
+          cd scripts
+          wget https://github.com/googlefonts/noto-emoji/raw/refs/heads/main/fonts/NotoColorEmoji.ttf
+          ./create_emojis.sh NotoColorEmoji.ttf
+          rm NotoColorEmoji.ttf
+
+      - name: Check diff
+        run: |
+          cd $GITHUB_WORKSPACE
+          maybe_changes=`git diff`
+
+          [[ "${maybe_changes}" == "" ]] && echo "has_changes=false" >> $GITHUB_ENV && echo "[INFO]: No changes in emoji font data"
+          [[ "${maybe_changes}" != "" ]] && echo "has_changes=true" >> $GITHUB_ENV  && echo "[WARNING]: Found changes in emoji font data!"
+          exit 0
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        if: env.has_changes == 'true' # || github.ref == 'refs/heads/main'  # only runs if on the 'main' branch
+        with:
+          commit-message: "Upstream font got updated."
+          title: "Auto update emojis"
+          body: |
+            A version change occured
+
+
