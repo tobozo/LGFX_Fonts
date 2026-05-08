@@ -53,6 +53,7 @@ jobs:
           maybe_changes=`git diff`
           [[ "${maybe_changes}" == "" ]] && echo "[INFO]: No changes in emoji font data"
           [[ "${maybe_changes}" != "" ]] && echo "[WARNING]: Found changes in emoji font data!"
+          exit 0
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
