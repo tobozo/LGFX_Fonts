@@ -1,0 +1,23 @@
+{
+  "name": "LGFX_Fonts",
+  "description": "External fonts support for LovyanGFX/M5GFX",
+  "keywords": "lcd,tft,gfx,lgfx,esp32,fonts,emojis,lvgl",
+  "license": "MIT and SIL clause",
+  "authors": [
+    {
+      "name": "tobozo",
+      "url": "https://github.com/tobozo"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tobozo/LGFX_Fonts.git"
+  },
+  "version": "1.0.0",
+  "frameworks": ["arduino", "espidf", "*"],
+  "platforms": ["espressif32", "espressif8266", "atmelsam", "native", "raspberrypi"],
+  "headers": "LGFX_Fonts.hpp",
+  "build": {
+    "libArchive": false
+  }
+}
