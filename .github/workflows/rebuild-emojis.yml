@@ -49,7 +49,9 @@ jobs:
           ./create_emojis.sh NotoColorEmoji.ttf
 
       - name: Show diff
-        run: git diff
+        run: |
+          maybe_changes=`git diff`
+          [[ "${maybe_changes}" == "" ]] && echo "No changes in emoji font data"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
