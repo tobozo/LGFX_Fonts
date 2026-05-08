@@ -35,7 +35,7 @@ namespace lgfx
     const emoji_png_t* LGFX_Emojis::emojisPtr = nullptr;
     size_t LGFX_Emojis::emojisCount = 0;
 
-
+    // TODO: use real lookup table instead of loop/match
     const emoji_desc_t* LGFX_Emojis::_lookup(uint32_t code)
     {
       static emoji_desc_t entry;
@@ -139,6 +139,10 @@ namespace lgfx
           for(int j=0; j<subgroup->count; j++ )
           {
             auto dst = (void*)&LGFX_Emojis::emojisPtr[idx];
+            // TODO: check for duplicate before inserting
+            // auto* e = LGFX_Emojis::_lookup(dst->code);
+            // if (e->data && e->png_h > 0) // this emoji has already been assigned
+            //   continue;
             memcpy(dst, &subgroup->emojis[j], sizeof(emoji_png_t));
             idx++;
           }
