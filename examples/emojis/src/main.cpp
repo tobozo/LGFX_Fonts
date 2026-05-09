@@ -96,15 +96,15 @@ void loop()
 {
   lcd.setTextColor(random(0x10000)| 0x8410, random(0x10000)&0x7BEF);
 
-  auto& emojis = lgfx::LGFX_Emojis::emojis();
-
-  for (const auto& item : emojis)
+  auto emojis = lgfx::LGFX_Emojis::emojis();
+  for(int i=0;i<lgfx::LGFX_Emojis::count();i++)
   {
+    auto item = emojis[i].ptr;
+
     if(lcd.getCursorY()+lcd.fontHeight()/2>lcd.height()) {
       lcd.setCursor(0,0);
     }
-    auto emojiChar = item.ptr->emoji;
-    lcd.print( emojiChar );
+    lcd.print( item->emoji );
   }
 }
 

@@ -33,43 +33,130 @@ namespace lgfx
 
     bool LGFX_Emojis::_loaded = false;
 
-    std::vector<emoji_code_ptr_t> LGFX_Emojis::emojisVec;
-    std::vector<emoji_block_range_t> LGFX_Emojis::rangedCodes;
+    emoji_code_ptr_t* LGFX_Emojis::emojisPtr = nullptr;
+    size_t LGFX_Emojis::emojisCount = 0;
+    size_t LGFX_Emojis::emojisAllocSize = 0;
+
+    emoji_block_range_t* LGFX_Emojis::rangeCodesPtr = nullptr;
+    size_t LGFX_Emojis::rangeCodesCount = 0;
+    size_t LGFX_Emojis::rangeCodesAllocSize = 0;
+
+    emoji_lookup_cb_t LGFX_Emojis::_lookup_cb = _lookup;
 
 
+    // bubble sort
+    void LGFX_Emojis::_emoji_code_ptr_sort(emoji_code_ptr_t* emojisPtr, size_t emojisCount)
+    {
+      if(!emojisPtr || emojisCount==0)
+        return;
+      for (int i = 0; i < emojisCount - 1; i++)
+        for (int j = 0; j < emojisCount - i - 1; j++)
+          if (emojisPtr[j].code > emojisPtr[j + 1].code)
+            std::swap(emojisPtr[j], emojisPtr[j + 1]);
+    }
+
+
+    // Split indexes/codes from emoji_code_ptr_t array into emoji_block_range_t (buckets) for faster lookup.
+    bool LGFX_Emojis::_emoji_code_range_split(emoji_code_ptr_t*emojisPtr, size_t emojisCount)
+    {
+      if(!emojisPtr || emojisCount==0)
+        return false;
+
+      rangeCodesCount = 0;
+
+      // The amount of buckets is estimated by extracting the sqrt(emojisCount).
+      // This sets the maximum lookup iterations to bucketSize*2 (instead of bucketSize^2 for a single loop).
+      const float sqrCount = sqrt(emojisCount);
+      const size_t bucketSize = sqrCount>8 ? ceil(sqrCount) : 8;
+
+      rangeCodesAllocSize = bucketSize*sizeof(emoji_block_range_t);
+      rangeCodesPtr = (emoji_block_range_t*)malloc(rangeCodesAllocSize);
+
+      if(!rangeCodesPtr) { // malloc failed
+        rangeCodesAllocSize = 0;
+        return false;
+      }
+
+      uint32_t range_start = emojisPtr[0].code;
+      uint32_t range_end = range_start;
+      uint32_t idx_start = 0;
+
+      for(uint32_t i=1;i<emojisCount;i++) {
+        if( i-idx_start>bucketSize ) {
+          rangeCodesPtr[rangeCodesCount++] = {range_start, range_end, idx_start, i-1};
+          range_start = emojisPtr[i].code;
+          idx_start = i;
+        }
+        range_end = emojisPtr[i].code;
+      }
+
+      if( rangeCodesCount>0 && rangeCodesPtr[rangeCodesCount-1].end != range_end )
+        rangeCodesPtr[rangeCodesCount++] = {range_start, range_end, idx_start, emojisCount-1};
+
+      return rangeCodesCount>0;
+    }
+
+    // slow emoji lookup
     const emoji_desc_t* LGFX_Emojis::_lookup(uint32_t code)
     {
       static emoji_desc_t entry;
       entry = emoji_desc_t();
       entry.code = code;
 
-      for(int i=0;i<rangedCodes.size();i++) {
-        if( code>rangedCodes[i].end )
-          continue;
+      if( !emojisPtr || emojisCount==0 || code == 0)
+        goto _end;
 
-        for( int idx=rangedCodes[i].idx_start; idx<=rangedCodes[i].idx_end; idx++ ) {
-          auto emoji = emojisVec[idx].ptr;
-          if( emoji->code == code ) {
+      for(int i=0;i<LGFX_Emojis::emojisCount;i++) {
+        auto emoji = LGFX_Emojis::emojisPtr[i].ptr;
+        if( emoji->code == code ) { // match
+          if( !emoji->data || emoji->data_len == 0 )
+            goto _end; // bad emoji?
+          entry.data  = (uint8_t*)emoji->data;
+          entry.len   = emoji->data_len;
+          entry.png_w = (int16_t)((entry.data[18] << 8) | entry.data[19]);
+          entry.png_h = (int16_t)((entry.data[22] << 8) | entry.data[23]);
+          goto _end;
+        }
+      }
+      _end:
+      return &entry;
+    }
+
+    // fast emoji lookup
+    const emoji_desc_t* LGFX_Emojis::_lookup_fast(uint32_t code)
+    {
+      static emoji_desc_t entry;
+      entry = emoji_desc_t();
+      entry.code = code;
+
+      if( !rangeCodesPtr || rangeCodesCount==0 || code == 0)
+        goto _end;
+
+      for(int i=0;i<rangeCodesCount;i++) {
+        auto range = rangeCodesPtr[i];
+        if( code > range.end )
+          continue; // code value to look up is outside the current range, no need to loop through
+        for( int idx=range.idx_start; idx<=range.idx_end; idx++ ) {
+          auto emoji = emojisPtr[idx].ptr;
+          if( emoji->code == code ) { // match
             if( !emoji->data || emoji->data_len == 0 )
-              goto _end;
-
-            entry.data = (uint8_t*)emoji->data;
-            entry.len  = emoji->data_len;
+              goto _end; // bad emoji?
+            entry.data  = (uint8_t*)emoji->data;
+            entry.len   = emoji->data_len;
             entry.png_w = (int16_t)((entry.data[18] << 8) | entry.data[19]);
             entry.png_h = (int16_t)((entry.data[22] << 8) | entry.data[23]);
             goto _end;
           }
         }
       }
-
       _end:
       return &entry;
     }
 
-
+    // draw callback for LGFX
     int32_t LGFX_Emojis::_draw_cb(lgfx::LGFXBase* gfx, int32_t x, int32_t y, uint32_t code, int32_t font_height)
     {
-      auto* e = _lookup(code);
+      auto* e = _lookup_cb(code);
       if (!e->data || e->png_h <= 0)
         return 0;
       // png will be scaled to font height
@@ -91,7 +178,7 @@ namespace lgfx
       return 0; // png rendering failed, image too big or scale too low?
     }
 
-
+    // sort and index selected emojis
     bool LGFX_Emojis::_create_list_from_groups(const emoji_png_group_t* emojis_groups, size_t groups_count)
     {
       if(!emojis_groups)
@@ -99,46 +186,42 @@ namespace lgfx
       if(groups_count==0)
         return false;
 
-      emojisVec.clear();
-      rangedCodes.clear();
+      emojisCount = 0;
 
-      // 1) add selected emojis (code+pointer) to a vector
+      // count selected emojis
+      for(int g=0;g<groups_count;g++)
+        for(int i=0;i<emojis_groups[g].count;i++)
+          emojisCount += emojis_groups[g].subgroups[i].count;
+
+      if(emojisCount == 0)
+        return false;
+
+      emojisAllocSize = emojisCount*sizeof(emoji_code_ptr_t);
+      emojisPtr = (emoji_code_ptr_t*)malloc(emojisAllocSize);
+
+      if(!emojisPtr) {
+        emojisAllocSize = 0;
+        return false;
+      }
+
+      size_t emojiIdx = 0;
+
+      // add selected emojis (code+pointer) to an array
       for(int g=0;g<groups_count;g++) { // for each group
         auto emojis_group = &emojis_groups[g];
         for(int i=0;i<emojis_group->count;i++) {
           auto subgroup = &emojis_group->subgroups[i];
-          for(int j=0; j<subgroup->count; j++ ) {
-            emojisVec.push_back({ subgroup->emojis[j].code, &subgroup->emojis[j] });
-          }
+          for(int j=0; j<subgroup->count; j++ )
+            emojisPtr[emojiIdx++] = { subgroup->emojis[j].code, &subgroup->emojis[j] };
         }
       }
 
-      if( emojisVec.size() == 0 )
-        return false;
+      _emoji_code_ptr_sort(emojisPtr,  emojisCount); // sort emojis by code
 
-      // 2) sort emojis by code
-      std::sort(emojisVec.begin(), emojisVec.end(), [](auto &a, auto &b) -> bool { return a.code < b.code; });
-
-      // 3) split indexes/codes in ranges for faster lookup
-      uint32_t lastCode = emojisVec[0].code;
-      uint32_t lastInsertedIdx = 0;
-      uint32_t blocks = 1;
-      uint32_t range_start = lastCode;
-      uint32_t idx_start = 0;
-      for(uint32_t i=1;i<emojisVec.size();i++)
-      {
-        if( lastCode+1 != emojisVec[i].code && i-lastInsertedIdx>8)
-        {
-          rangedCodes.push_back({range_start, lastCode, idx_start, i-1});
-          range_start = emojisVec[i].code;
-          idx_start = i;
-          blocks++;
-          lastInsertedIdx = i;
-        }
-        lastCode = emojisVec[i].code;
-      }
-      if( rangedCodes[rangedCodes.size()-1].end != lastCode )
-        rangedCodes.push_back({range_start, lastCode, idx_start, emojisVec.size()-1});
+      if( _emoji_code_range_split(emojisPtr,  emojisCount) )
+        _lookup_cb = _lookup_fast; // fast lookup enabled
+      else // _emoji_code_range_split allocation failed, fallback to slow lookup
+        _lookup_cb = _lookup;
 
       _loaded = true;
       return true;
