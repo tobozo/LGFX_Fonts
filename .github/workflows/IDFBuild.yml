@@ -15,6 +15,7 @@ on:
     - '**.h'
     - '**.c'
     - '**IDFBuild.yml'
+    - '**sdkconfig.defaults'
     - 'CMakeLists.txt'
     - 'esp-idf-versions.php'
   pull_request:
