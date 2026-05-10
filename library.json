@@ -2,7 +2,7 @@
   "name": "LGFX_Fonts",
   "description": "External fonts support for LovyanGFX/M5GFX",
   "keywords": "lcd,tft,gfx,lgfx,esp32,fonts,emojis,lvgl",
-  "license": "MIT and SIL clause",
+  "license": "MIT",
   "authors": [
     {
       "name": "tobozo",
