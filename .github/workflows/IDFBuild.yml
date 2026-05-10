@@ -4,7 +4,7 @@ name: IDFBuild
 
 env:
   ESP_IDF_REPO_URL: https://github.com/espressif/esp-idf
-  PROJECT_DIR: examples/build_test
+  PROJECT_DIR: LGFX_Fonts/examples/build_test
 
 on:
   push:
@@ -119,8 +119,6 @@ jobs:
           source ~/esp/esp-idf/export.sh
           idf_fqbn="${{ matrix.esp-idf-fqbn }}"
           idf_board=${idf_fqbn%%@*}
-          pwd
-          ls
           cd ${{ needs.set_matrix.outputs.project_dir }}
           idf.py set-target $idf_board
           idf.py build
