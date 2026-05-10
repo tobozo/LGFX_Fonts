@@ -62,20 +62,24 @@ jobs:
       fail-fast: false
 
     steps:
-      - name: Checkout LGFX_Fonts
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Checkout LovyanGFX
         uses: actions/checkout@v6
         with:
           repository: lovyan03/LovyanGFX
+          path: LovyanGFX
 
       - name: Checkout M5GFX
         uses: actions/checkout@v6
         with:
           repository: M5Stack/M5GFX
+          path: M5GFX
+
+      - name: Checkout LGFX_Fonts
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: main
 
       # - name: Cache pip for ${{ matrix.esp-idf-fqbn }}
       #   uses: actions/cache@v3
