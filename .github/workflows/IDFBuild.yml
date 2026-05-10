@@ -79,7 +79,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          path: main
+          path: LGFX_Fonts
 
       # - name: Cache pip for ${{ matrix.esp-idf-fqbn }}
       #   uses: actions/cache@v3
@@ -119,6 +119,8 @@ jobs:
           source ~/esp/esp-idf/export.sh
           idf_fqbn="${{ matrix.esp-idf-fqbn }}"
           idf_board=${idf_fqbn%%@*}
+          pwd
+          ls
           cd ${{ needs.set_matrix.outputs.project_dir }}
           idf.py set-target $idf_board
           idf.py build
