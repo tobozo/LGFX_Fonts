@@ -20,7 +20,7 @@ jobs:
     if: github.repository == 'tobozo/LGFX_Fonts'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.git_ref || github.event.pull_request.head.sha }}
           submodules: 'recursive'
