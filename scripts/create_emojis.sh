@@ -84,6 +84,8 @@ if [ $status -ne 0 ]; then
   echo "Warning: python module 'resvg-python' not found -> no support for SVG fonts"
 fi
 
+pngquant_ver=`which pngquant`
+ifStatusFail " not found"
 
 
 # generate emoji files for all sizes
@@ -96,13 +98,19 @@ do
   out=`$pythoncmd`
   ifStatusFail "python3 command failed:" $pythoncmd
 
+  pngquantcmd=`printf "pngquant --force 8 png%sx%s/* --ext .png" $pngSize $pngSize`
+  echo "  2) Uglify: reduce palette to 8 colors (including alpha) -> $pngquantcmd"
+  out=`$pngquantcmd`
+  ifStatusFail "pngquant command failed:" $pngquantcmd
+  # find . -name '*.png' -exec pngquant --ext .png --force 16 {} \;
+
   phpcmd=`printf "php export_emoji_to_C.php %s" $pngSize`
-  echo "  2) Export to C -> $phpcmd"
+  echo "  3) Export to C -> $phpcmd"
   out=`$phpcmd`
   ifStatusFail "php command failed:" $phpcmd
 
   cleanupcmd=`printf "rm -Rf png%sx%s" $pngSize $pngSize`
-  echo "  3) Cleanup -> $cleanupcmd"
+  echo "  4) Cleanup -> $cleanupcmd"
   out=`$cleanupcmd`
   ifStatusFail "cleanup command failed:" $cleanupcmd
 
@@ -112,7 +120,7 @@ do
   [[ -d "$dstfolder" ]] && rm -Rf "$dstfolder" # remove if exists, mv is just rename under the hood
 
   movecmd=`printf "mv %s %s" $srcfolder $dstfolder`
-  echo "  4) Deploy -> $movecmd"
+  echo "  5) Deploy -> $movecmd"
   out=`$movecmd`
   ifStatusFail "move command failed:" $movecmd
 

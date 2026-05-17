@@ -45,6 +45,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install pillow fonttools resvg-py
 
+      - name: Install pngquant
+        run: apt-get install pngquant
+
       - name: Rebuild emojis
         run: |
           cd scripts
