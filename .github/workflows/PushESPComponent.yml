@@ -6,9 +6,6 @@ on:
 
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Version to push to the component registry'
-        required: true
       git_ref:
         description: 'Git ref with the source to push to the component registry'
         required: true
@@ -31,5 +28,5 @@ jobs:
         with:
           namespace: 'tobozo'
           components: "lgfx_fonts: ."
-          dry_run: true
+          # dry_run: true
 
