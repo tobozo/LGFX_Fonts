@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.sketch-dir }}/${{ matrix.gfx-type }}@${{ matrix.pio_env }}
+    name: ${{ matrix.gfx-type }}:${{ matrix.sketch-dir }}@${{ matrix.pio_env }}
 
     runs-on: ubuntu-latest
 
@@ -25,7 +25,7 @@ jobs:
       matrix:
 
         pio_env:
-          - m5stack_core
+          - m5stack
 
         gfx-type:
           - lgfx
@@ -36,8 +36,8 @@ jobs:
           - LVGL_Fonts
 
         include:
-          - { pio_env: m5stack_core, gfx-type: lgfx, ... }
-          - { pio_env: m5stack_core, gfx-type: m5gfx, ... }
+          - { pio_env: m5stack, gfx-type: lgfx, ... }
+          - { pio_env: m5stack, gfx-type: m5gfx, ... }
 
       fail-fast: false
 
