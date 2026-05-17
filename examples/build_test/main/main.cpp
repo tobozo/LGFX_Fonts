@@ -1,13 +1,15 @@
+#include "sdkconfig.h"
 
-#if !defined USE_M5GFX && !defined USE_LGFX
+#if !defined CONFIG_LGFX_FONT_USE_M5GFX && !defined CONFIG_LGFX_FONT_USE_LOVYANGFX
   // just pick one
 
-  //#define USE_M5GFX
-  #define USE_LGFX
+  //#define CONFIG_LGFX_FONT_USE_M5GFX
+  #define CONFIG_LGFX_FONT_USE_LOVYANGFX
+  #pragma message "Defaulting to LovyanGFX"
 
 #endif
 
-#if defined USE_M5GFX // Note: M5GFX version must be >= 1.2.20
+#if defined CONFIG_LGFX_FONT_USE_M5GFX // Note: M5GFX version must be >= 1.2.20
 
   #include <M5GFX.h>
   #include <M5Unified.h>
@@ -15,7 +17,7 @@
   #define lcd M5.Display
   #define initExample M5.begin
 
-#elif defined USE_LGFX
+#elif defined CONFIG_LGFX_FONT_USE_LOVYANGFX
 
   #define LGFX_AUTODETECT
   #include <LovyanGFX.hpp>
@@ -27,7 +29,7 @@
 
 #else
 
-  #error "missing define: USE_LGFX or USE_M5GFX"
+  #error "missing define: CONFIG_LGFX_FONT_USE_LOVYANGFX or CONFIG_LGFX_FONT_USE_M5GFX"
 
 #endif
 

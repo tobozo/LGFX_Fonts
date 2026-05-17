@@ -1,5 +1,21 @@
 cmake_minimum_required(VERSION 3.16.0)
-list(APPEND EXTRA_COMPONENT_DIRS "$(PROJECT_PATH)/../../../../LovyanGFX")
-list(APPEND EXTRA_COMPONENT_DIRS "$(PROJECT_PATH)/../../../../LGFX_Fonts")
+
+# If for some insane reason you're using this project as a boilerplate, change this
+set(EXTRA_COMPONENT_DIR "$(PROJECT_PATH)/../../../..")
+
+if(CONFIG_LGFX_FONT_USE_GFX)
+  if(CONFIG_LGFX_FONT_USE_LOVYANGFX)
+    list(APPEND EXTRA_COMPONENT_DIRS "${EXTRA_COMPONENT_DIR}/LovyanGFX")
+  elseif(CONFIG_LGFX_FONT_USE_M5GFX)
+    list(APPEND EXTRA_COMPONENT_DIRS "${EXTRA_COMPONENT_DIR}/M5GFX")
+  else()
+    message( FATAL_ERROR "No GFX Lib selected, CMake will exit." )
+  endif()
+else()
+  list(APPEND EXTRA_COMPONENT_DIRS "${EXTRA_COMPONENT_DIR}/LovyanGFX")
+endif()
+
+list(APPEND EXTRA_COMPONENT_DIRS "${EXTRA_COMPONENT_DIR}/LGFX_Fonts")
+
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(LGFX_Fonts-build-test)
