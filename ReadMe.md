@@ -2,6 +2,13 @@
 
 Externally managed fonts for [LovyanGFX](https://github.com/lovyan03/LovyanGFX) / [M5GFX](https://github.com/M5Stack/M5GFX).
 
+| Registry | Badge |
+| -- | -- |
+| <sup>Arduino Libraries Registry</sup> | [![arduino-library-badge](https://www.ardu-badge.com/badge/LGFX_Fonts.svg?)](https://www.ardu-badge.com/LGFX_Fonts)| 
+| <sup>Platformio Registry</sup> |  [![PlatformIO Registry](https://badges.registry.platformio.org/packages/tobozo/library/LGFX_Fonts.svg)](https://registry.platformio.org/packages/libraries/tobozo/LGFX_Fonts) | 
+| <sup>ESP Component Registry</sup> | [![Component Registry](https://components.espressif.com/components/tobozo/lgfx_fonts/badge.svg)](https://components.espressif.com/components/tobozo/lgfx_fonts) |
+
+
 ## Requirements
 
 - LovyanGFX >= 1.2.20
